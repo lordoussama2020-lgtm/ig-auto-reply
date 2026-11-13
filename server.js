@@ -4,6 +4,15 @@
 // no headless browser. Safe by design: it uses the same API
 // ManyChat/Chatfuel use (private replies to comments).
 //
+// AUTH PATH: "Instagram API with Instagram Login"
+// (graph.instagram.com) — the app connects DIRECTLY to your
+// Instagram professional account. NO Facebook Page required,
+// no Facebook Login. The token is an Instagram user access token
+// generated in the Meta app dashboard (60 days, exchangeable
+// for a long-lived token). The app itself is still created at
+// developers.facebook.com — that portal login is only the key
+// to the dashboard; nothing is posted to Facebook.
+//
 // How it works:
 //   1. Someone comments a keyword (VIBE, REPLICA, FREE...) on your reel.
 //   2. Meta sends your server a webhook (or the poller finds it).
@@ -23,8 +32,8 @@ const path = require('node:path');
 // ---------- config ----------
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const GRAPH_VERSION = process.env.GRAPH_VERSION || 'v21.0';
-const GRAPH_BASE = `https://graph.facebook.com/${GRAPH_VERSION}`;
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN || '';
+const GRAPH_BASE = process.env.GRAPH_BASE || `https://graph.instagram.com/${GRAPH_VERSION}`;
+const ACCESS_TOKEN = process.env.IG_ACCESS_TOKEN || process.env.PAGE_ACCESS_TOKEN || '';
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'ig-auto-reply-verify';
 const APP_SECRET = process.env.APP_SECRET || '';
 const DRY_RUN = process.env.DRY_RUN === '1';
@@ -101,7 +110,7 @@ function findFlow(text, mediaId) {
 
 // ---------- Graph API ----------
 async function graphPost(endpointPath, params) {
-  const body = new URLSearchParams({ ...params, access_token: PAGE_ACCESS_TOKEN });
+  const body = new URLSearchParams({ ...params, access_token: ACCESS_TOKEN });
   if (DRY_RUN) {
     log('[DRY RUN] would POST', endpointPath, '->', JSON.stringify(Object.fromEntries(body.entries())));
     return { id: 'dry-run' };
@@ -206,13 +215,13 @@ function handleWebhookBody(body) {
 // Polling GET /{media-id}/comments works with basic access and is the
 // safety net: same pipeline, same dedupe, same limits.
 async function pollOnce() {
-  if (!PAGE_ACCESS_TOKEN) {
-    log('Poller skipped: PAGE_ACCESS_TOKEN not set');
+  if (!ACCESS_TOKEN) {
+    log('Poller skipped: IG_ACCESS_TOKEN not set');
     return;
   }
   for (const mediaId of POLL_MEDIA_IDS) {
     try {
-      const url = `${GRAPH_BASE}/${mediaId}/comments?fields=id,text,timestamp,from&limit=50&access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`;
+      const url = `${GRAPH_BASE}/${mediaId}/comments?fields=id,text,timestamp,from&limit=50&access_token=${encodeURIComponent(ACCESS_TOKEN)}`;
       const res = await fetch(url);
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -296,7 +305,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   log(`IG Auto-Reply listening on :${PORT} (dry run: ${DRY_RUN})`);
   log(`Flows: ${keywords.map((f) => f.keyword).join(', ') || 'none'}`);
-  if (!PAGE_ACCESS_TOKEN) log('WARNING: PAGE_ACCESS_TOKEN not set — replies will fail until you set it (see .env.example)');
+  if (!ACCESS_TOKEN) log('WARNING: IG_ACCESS_TOKEN not set — replies will fail until you set it (see .env.example)');
   if (POLL_MEDIA_IDS.length) {
     log(`Poller on: ${POLL_MEDIA_IDS.join(', ')} every ${POLL_INTERVAL_MIN} min`);
     pollOnce();

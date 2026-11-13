@@ -11,9 +11,10 @@ Tool dyalek b-nefsek: wa7ed y-commenti kelma (VIBE, REPLICA, FREE…) f reel dya
 | Chno | 3lach |
 |---|---|
 | Compte Instagram **Creator** (wla Business) | L-API ma khdamch m3a Personal |
-| **Facebook Page** m-linkiya m3a l-Instagram | Meta kat-tlobha b7al "OAuth surface" |
-| Compte **Meta Developer** (developers.facebook.com) | Bach t-creer l-app |
+| **Compte Meta Developer** (developers.facebook.com) | Bach t-creer l-app — hada ghir l-portal, **ma kay-7tajch Facebook Page** |
 | Hosting (Render, free tier) | L-server khassou y-b9a khdam 24/7 b HTTPS |
+
+> **Instagram Login, machi Facebook Login:** l-app kat-connecta DIRECT l @oussama_ai_lab b Instagram credentials. Ma kaynch Facebook Page f l-7isab, w 7ta 7aja ma kat-t-posta f Facebook. L-portal dyal developers.facebook.com kay-t-7ell b Facebook login (ghir bach t-dkhol l-dashboard) — ila ma 3endekch Facebook account, goulha, w n-chouf l-alternative.
 
 ---
 
@@ -25,15 +26,16 @@ Ma t-khafch: l-followers, l-posts, kolchi kay-b9a. W t-9der t-rj3o Personal mora
 
 ## 2. Facebook Page + linkiha m3a Instagram
 
-- Sir l facebook.com → **Create Page** (smiha "Oussama AI Lab" matalan).
-- F l-Page: **Settings → Linked accounts → Instagram → Connect** → dkhol b @oussama_ai_lab → autorisi.
-- Wlla men Instagram: Settings → **Accounts Centre** → Pages → Add l-Page.
+## 2. (SKIPPED — ma kaynch Facebook Page)
+
+F l-Instagram Login path, **ma khasskch Facebook Page**. Sir nichan l l-étape 3.
 
 ## 3. Creer l-app f Meta (developers.facebook.com)
 
-1. Dkhol b Facebook dyalek → **My Apps → Create App** → khtar **Other** → **Business** (ila ma 3endekch business, **Other** khdam).
-2. F l-app: **Add Product → Instagram** (Instagram API with Instagram Login).
-3. F **Instagram → API Setup with Instagram Login**: connecti l-Instagram account (@oussama_ai_lab) b Facebook Login.
+1. Dkhol b Facebook dyalek → **My Apps → Create App** → khtar **Business** type.
+   > Hada ghir l-portal — Facebook login hna bach t-dkhol l-dashboard bou7do. L-app ma kat-linkich Page, w 7ta 7aja ma kat-t-posta f Facebook.
+2. F l-app: **Add Product → Instagram** → khtar **Instagram API with Instagram Login** (machi Facebook Login).
+3. F **Instagram → API Setup with Instagram Login**: connecti l-Instagram account (@oussama_ai_lab) **b Instagram login** (dkhol b Instagram credentials dyalek, machi Facebook).
 4. Permissions li khassk t-tlob (f **App Review → Permissions and Features**):
    - `instagram_business_basic` — profile + media
    - `instagram_business_manage_comments` — comments, webhooks, private replies
@@ -47,13 +49,13 @@ Ma t-khafch: l-followers, l-posts, kolchi kay-b9a. W t-9der t-rj3o Personal mora
 2. Creer repo f GitHub w uploadi ga3 l-files dyal `ig-auto-reply-tool/` (server.js, keywords.json, package.json, render.yaml).
 3. F Render: **New → Web Service → Build from GitHub** → khtar l-repo → Render kay-9ra `render.yaml` bou7do.
 4. F **Environment**: 3emmer:
-   - `PAGE_ACCESS_TOKEN` — token dyal l-Page (chouf l-étape 5)
+   - `IG_ACCESS_TOKEN` — token dyal Instagram (chouf l-étape 5)
    - `VERIFY_TOKEN` — ay string khtariti (matalan `ig-reply-2026-secret`)
    - `APP_SECRET` — men l-app dashboard (Settings → Basic → App Secret)
    - `DRY_RUN` = `1` (l-awal, bach t-testi bla ma t-sift chi DM 7a9i9i)
 5. Deploy → ghadi t-akhud URL b7al `https://ig-auto-reply-xxxx.onrender.com` — **ktebha**, ghadi t-7tajha f l-étape 6.
 
-**Page Access Token (long-lived):** f developers.facebook.com → **Tools → Graph API Explorer** → khtar l-app dyalek → **Get Page Access Token** → khtar l-Page → permissions `instagram_basic, instagram_manage_comments, instagram_manage_messages` → **Generate** → moraha bedlo l **long-lived token** (f l-Explorer, clicki 3la ⓘ → Extend). Copyi l-token l Render.
+**Instagram Access Token:** f l-app dashboard → **Instagram → API setup with Instagram Login** → **Generate token** 7da l-account dyalek (@oussama_ai_lab). L-token valid 60 jours — bedlo l **long-lived token** (f l-dashboard, **Exchange token** wla b Graph API: `GET graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=...&access_token=...`). Copyi l-token l Render f `IG_ACCESS_TOKEN`.
 
 ## 5. Webhook: 3ellm Meta fin t-sift l-comments
 
