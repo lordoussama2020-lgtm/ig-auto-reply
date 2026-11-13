@@ -1,0 +1,10 @@
+name = "ig-auto-reply"
+main = "worker.js"
+compatibility_date = "2026-11-13"
+
+# Workers KV namespace for dedupe state (seen comments / users).
+# Create it first (dashboard → Workers KV → Create namespace, or
+# `wrangler kv namespace create SEEN`) and paste its id here.
+[[kv_namespaces]]
+binding = "SEEN"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
