@@ -1,0 +1,1 @@
+{"description":"Instagram comment keyword -> DM auto-reply via the official Graph API (private replies). Zero dependencies.","engines":{"node":">=18"},"main":"server.js","name":"ig-auto-reply","scripts":{"start":"node server.js"},"version":"1.0.0"}
